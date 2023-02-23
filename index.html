@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Monaco Editor</title>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor/min/vs/loader.js"></script>
+    <script>
+        require.config({
+            paths: {
+                'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor/min/vs'
+            }
+        });
+        //Code python
+        require(['vs/editor/editor.main'], function () {
+            var editor = monaco.editor.create(document.getElementById('editor'), {
+                value: 'print("Hello, World!")',
+                language: 'python'
+            });
+            document.getElementById('run').addEventListener('click', function () {
+                var code = editor.getValue();
+                let verifiedCode = JSON.parse(JSON.stringify(code));
+
+                axios.post('http://trouve-ton-indien.store:3000/runPython', {
+                        code: verifiedCode
+                    })
+                    .then(function (response) {
+                        console.log(response.data);
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                    });
+            });
+        });
+        // Code Java
+        require(['vs/editor/editor.main'], function () {
+            var editor = monaco.editor.create(document.getElementById('editor2'), {
+                value: 'public class HelloWorld {\n' +
+                    '    public static void main(String[] args) {\n' +
+                    '        System.out.println("Hello, World!");\n' +
+                    '    }\n' +
+                    '}',
+                language: 'java'
+            });
+            document.getElementById('run2').addEventListener('click', function () {
+                var code = editor.getValue();
+                let verifiedCode = JSON.parse(JSON.stringify(code));
+
+                axios.post('http://trouve-ton-indien.store:3000/execute-java', {
+                        code: verifiedCode
+                    })
+                    .then(function (response) {
+                        console.log(response.data);
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                    });
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div id="editor" style="width: 800px; height: 600px; border: 1px solid grey"></div>
+    <button id="run">Exécuter</button>
+    <div id="editor2" style="width: 800px; height: 600px; border: 1px solid grey"></div>
+    <button id="run2">Exécuter</button>
+
+</body>
+
+</html>
